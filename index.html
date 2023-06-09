@@ -19,6 +19,8 @@
             <button id="pause">Pause</button>
             <button id="clear">Clear</button>
         </div>
+        <span id="status"></span>
+
         <h2>Text that you want to speak</h2>
         <textarea class="textarea" id="speak"></textarea>
         <h2>What you speak</h2>
@@ -37,12 +39,13 @@
 
     const result = document.getElementById('result');
     const speak = document.getElementById('speak');
+    const status = document.getElementById('status');
 
     recognition.onresult = (event) => {
         const current = event.resultIndex;
         result.value = result.value + event.results[current][0].transcript;
 
-        if (speak.value == result.value) {
+        if (speak.value.toLowerCase().replace(/[^a-zA-Z0-9 ]|^[\s]*|[\s+]*$/g, '') == result.value.toLowerCase().replace(/[^a-zA-Z0-9 ]|^[\s]*|[\s+]*$/g, '')) {
             result.classList.add('success');
             alert('Parabéns você acertou');
         }
@@ -50,10 +53,12 @@
 
     document.getElementById('play').addEventListener('click', () => {
         recognition.start();
+        status.innerHTML = "Listening...";
     });
 
     document.getElementById('pause').addEventListener('click', () => {
         recognition.stop();
+        status.innerHTML = "Stopped listening.";
     });
 
     document.getElementById('clear').addEventListener('click', () => {

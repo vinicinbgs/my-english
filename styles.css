@@ -102,3 +102,8 @@ body {
 #text-match::placeholder {
   color: #696969;
 }
+
+#status {
+  margin-top: 10px;
+  color: yellow;
+}
