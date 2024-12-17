@@ -42,6 +42,7 @@ recognition.interimResults = true; // Allow interim results
 const result = document.getElementById('result');
 const speak = document.getElementById('speak');
 const status = document.getElementById('status');
+let isPaused = false;
 
 recognition.onresult = (event) => {
         const current = event.resultIndex;
@@ -56,12 +57,18 @@ recognition.onresult = (event) => {
 
 // Handle the end of the recognition session
 recognition.onend = () => {
-    console.log("Speech recognition ended. Restarting...");
-    recognition.start(); // Restart the recognition to keep listening
+      if (!isPaused) {
+        console.log("Speech recognition restarting.");
+        recognition.start(); // Restart if it ended unexpectedly
+    } else {
+        console.log("Speech recognition paused by user.");
+        isPaused = false; // Reset the paused state
+    }
 };
 
 // Start recognition when the play button is clicked
 document.getElementById('play').addEventListener('click', () => {
+    isPaused = false;
     result.value = ""; // Clear the result when starting
     recognition.start();
     console.log("Speech recognition start.");
@@ -70,6 +77,7 @@ document.getElementById('play').addEventListener('click', () => {
 
 // Stop recognition when the pause button is clicked
 document.getElementById('pause').addEventListener('click', () => {
+    isPaused = true;
     recognition.stop();
     console.log("Speech recognition stop.");
     status.innerHTML = "Stopped listening.";
