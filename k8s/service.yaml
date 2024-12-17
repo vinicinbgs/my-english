@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-my-english
+  namespace: nm-my-english
+  labels:
+    app: svc-my-english
+spec:
+  selector:
+    app: pod-my-english
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: ingress-my-english
+#   namespace: nm-my-english
+# spec:
+#   ingressClassName: traefik
+#   rules:
+#   - http:
+#       paths:
+#       - backend:
+#           service:
+#             name: svc-my-english
+#             port:
+#               number: 80
+#         path: /my-english
+#         pathType: Prefix
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: md-my-english-replacepath
+  namespace: nm-my-english
+spec:
+  stripPrefix:
+    prefixes:
+    - /my-english
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ir-my-english
+  namespace: nm-my-english
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: PathPrefix(`/my-english`)
+    middlewares:
+    - name: md-my-english-replacepath
+    services:
+    - name: svc-my-english
+      port: 80

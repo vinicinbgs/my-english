@@ -1,0 +1,43 @@
+# Deployment k8s object
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-my-english
+  namespace: nm-my-english
+  labels:
+    app: deploy-my-english
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-my-english
+  template:
+    metadata:
+      labels:
+        app: pod-my-english
+    spec:
+      containers:
+      - name: container-my-english
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+        - name: config-volume
+          mountPath: /etc/nginx/conf.d/my-english.conf
+          subPath: default.conf
+        resources:
+          requests:
+            memory: "10Mi"
+            cpu: "20m"
+          limits:
+            memory: "10Mi"
+            cpu: "20m"
+      volumes:
+      - name: html-volume
+        configMap:
+          name: cm-my-english
+      - name: config-volume
+        configMap:
+          name: cm-my-english

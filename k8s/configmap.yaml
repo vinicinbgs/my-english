@@ -1,0 +1,228 @@
+apiVersion: v1
+data:
+  default.conf: |-
+    server {
+        listen 8080;
+        server_name localhost;
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+        }
+    }
+  index.html: |-
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My English Speak</title>
+        <link rel='stylesheet' type='text/css' media='screen' href='/my-english/styles.css'>
+    </head>
+
+    <!-- gamificar ganha pontos quando acerta a sentenca -->
+
+    <body>
+        <div class="center">
+            <h1>Training your English</h1>
+            <div>
+                <button id="play">Play</button>
+                <button id="pause">Pause</button>
+                <button id="clear">Clear</button>
+            </div>
+            <h2>Text that you want to speak</h2>
+            <textarea class="textarea" id="speak"></textarea>
+            <h2>What you speak</h2>
+            <textarea class="textarea" id="result"></textarea>
+        </div>
+    </body>
+    <script>
+        if (navigator.userAgent.indexOf("Chrome") == -1) {
+            alert("This website is not supported in Firefox or Safari. Please use Google Chrome instead.");
+        }
+
+        // Use webkitSpeechRecognition for compatibility
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+        recognition.lang = "en-US";
+        recognition.continuous = true; // Keep listening continuously
+        recognition.interimResults = false; // Allow interim results
+
+        const result = document.getElementById('result');
+        const speak = document.getElementById('speak');
+
+        // Handle results from the recognition
+        recognition.onresult = (event) => {
+            const current = event.resultIndex;
+            const transcript = event.results[current][0].transcript;
+            result.value += transcript; // Append the transcript
+
+            // Check if the spoken text matches
+            if (speak.value.trim() === result.value.trim()) {
+                result.classList.add('success');
+                alert('Parabéns você acertou');
+            }
+        };
+
+        // Handle the end of the recognition session
+        recognition.onend = () => {
+            console.log("Speech recognition ended. Restarting...");
+            recognition.start(); // Restart the recognition to keep listening
+        };
+
+        // Start recognition when the play button is clicked
+        document.getElementById('play').addEventListener('click', () => {
+            result.value = ""; // Clear the result when starting
+            recognition.start();
+        });
+
+        // Stop recognition when the pause button is clicked
+        document.getElementById('pause').addEventListener('click', () => {
+            recognition.stop();
+        });
+
+        // Clear the result when the clear button is clicked
+        document.getElementById('clear').addEventListener('click', () => {
+            result.value = "";
+        });
+
+
+        ///////// Uncomment the following code to change the background color based on the spoken color
+        // const grammar =
+        //     "#JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral | crimson | cyan | fuchsia | ghostwhite | gold | goldenrod | gray | green | indigo | ivory | khaki | lavender | lime | linen | magenta | maroon | moccasin | navy | olive | orange | orchid | peru | pink | plum | purple | red | salmon | sienna | silver | snow | tan | teal | thistle | tomato | turquoise | violet | white | yellow ;";
+        // const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        // const speechRecognitionList = new webkitSpeechGrammarList();
+        // speechRecognitionList.addFromString(grammar, 1);
+        // recognition.grammars = speechRecognitionList;
+        // recognition.continuous = true;
+        // recognition.lang = "en-US";
+        // recognition.interimResults = false;
+
+        // const bg = document.querySelector("html");
+
+        // document.getElementById('play').addEventListener('click', () => {
+        //     recognition.start();
+        //     console.log("Ready to receive a color command.");
+        // });
+
+        // recognition.onresult = (event) => {
+        //     const current = event.resultIndex;
+        //     const transcript = event.results[current][0].transcript;
+        //     const color = transcript;
+        //     bg.style.backgroundColor = color;
+        // };
+
+    </script>
+
+    </html>
+  styles.css: |
+    @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;1,500;1,700&display=swap");
+
+    body {
+      font-family: "Chakra Petch", sans-serif;
+      background-color: #3f3f3f;
+      color: white;
+    }
+
+    #play {
+      background-color: #1db954;
+      border: 1px solid #1db954;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 100px;
+    }
+
+    #play:hover {
+      background-color: #ffffff;
+      border: 1px solid #1db954;
+      color: #000;
+    }
+
+    #pause {
+      background-color: #ffffff;
+      border: 1px solid #f39696;
+      color: #000;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 100px;
+    }
+
+    #pause:hover {
+      background-color: #f39696;
+      border: none;
+      color: #fff;
+    }
+
+    #clear {
+      background-color: white;
+      border: 1px solid #240e3f;
+      color: black;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 100px;
+    }
+
+    #clear:hover {
+      background-color: #240e3f;
+      border: none;
+      color: white;
+    }
+
+    .textarea {
+      width: 50%;
+      height: 100px;
+      background-color: #3f3f3f;
+      border: 3px solid #d9d9d9;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 20px;
+      color: white;
+      padding-top: 40px;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+      margin-top: 10px;
+      line-break: auto;
+      word-wrap: break-word;
+    }
+
+    .success {
+      border-color: #1db954;
+    }
+
+    @media screen and (max-width: 768px) {
+      .textarea {
+        width: 90%;
+      }
+    }
+
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #text-match {
+      padding: 10px;
+      margin: 10px 20px;
+      width: 80%;
+    }
+
+    #text-match::placeholder {
+      color: #696969;
+    }
+kind: ConfigMap
+metadata:
+  name: cm-my-english
+  namespace: nm-my-english
