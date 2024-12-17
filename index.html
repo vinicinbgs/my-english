@@ -41,19 +41,18 @@ recognition.interimResults = true; // Allow interim results
 
 const result = document.getElementById('result');
 const speak = document.getElementById('speak');
+const status = document.getElementById('status');
 
-// Handle results from the recognition
 recognition.onresult = (event) => {
-    const current = event.resultIndex;
-    const transcript = event.results[current][0].transcript;
-    result.value += transcript; // Append the transcript
+        const current = event.resultIndex;
+        result.value = result.value + event.results[current][0].transcript;
 
-    // Check if the spoken text matches
-    if (speak.value.trim() === result.value.trim()) {
-        result.classList.add('success');
-        alert('Parabéns você acertou');
+        if (speak.value.toLowerCase().replace(/[^a-zA-Z0-9 ]|^[\s]*|[\s+]*$/g, '') == result.value.toLowerCase().replace(/[^a-zA-Z0-9 ]|^[\s]*|[\s+]*$/g, '')) {
+            result.classList.add('success');
+            alert('Parabéns você acertou');
+        }
     }
-};
+
 
 // Handle the end of the recognition session
 recognition.onend = () => {
@@ -65,11 +64,15 @@ recognition.onend = () => {
 document.getElementById('play').addEventListener('click', () => {
     result.value = ""; // Clear the result when starting
     recognition.start();
+    console.log("Speech recognition start.");
+    status.innerHTML = "Listening...";
 });
 
 // Stop recognition when the pause button is clicked
 document.getElementById('pause').addEventListener('click', () => {
     recognition.stop();
+    console.log("Speech recognition stop.");
+    status.innerHTML = "Stopped listening.";
 });
 
 // Clear the result when the clear button is clicked
