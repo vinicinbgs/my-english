@@ -37,7 +37,7 @@ const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognit
 
 recognition.lang = "en-US";
 recognition.continuous = true; // Keep listening continuously
-recognition.interimResults = true; // Allow interim results
+recognition.interimResults = false; // Allow interim results
 
 const result = document.getElementById('result');
 const speak = document.getElementById('speak');
