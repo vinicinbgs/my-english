@@ -28,42 +28,54 @@
     </div>
 </body>
 <script>
-    if (navigator.userAgent.indexOf("Chrome") == -1) {
-        alert("This website is not supported in Firefox or Safari. Please use Google Chrome instead.");
+if (navigator.userAgent.indexOf("Chrome") == -1) {
+    alert("This website is not supported in Firefox or Safari. Please use Google Chrome instead.");
+}
+
+// Use webkitSpeechRecognition for compatibility
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+recognition.lang = "en-US";
+recognition.continuous = true; // Keep listening continuously
+recognition.interimResults = true; // Allow interim results
+
+const result = document.getElementById('result');
+const speak = document.getElementById('speak');
+
+// Handle results from the recognition
+recognition.onresult = (event) => {
+    const current = event.resultIndex;
+    const transcript = event.results[current][0].transcript;
+    result.value += transcript; // Append the transcript
+
+    // Check if the spoken text matches
+    if (speak.value.trim() === result.value.trim()) {
+        result.classList.add('success');
+        alert('Parabéns você acertou');
     }
+};
 
-    const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+// Handle the end of the recognition session
+recognition.onend = () => {
+    console.log("Speech recognition ended. Restarting...");
+    recognition.start(); // Restart the recognition to keep listening
+};
 
-    recognition.lang = "en-US";
-    recognition.continuous = true;
+// Start recognition when the play button is clicked
+document.getElementById('play').addEventListener('click', () => {
+    result.value = ""; // Clear the result when starting
+    recognition.start();
+});
 
-    const result = document.getElementById('result');
-    const speak = document.getElementById('speak');
-    const status = document.getElementById('status');
+// Stop recognition when the pause button is clicked
+document.getElementById('pause').addEventListener('click', () => {
+    recognition.stop();
+});
 
-    recognition.onresult = (event) => {
-        const current = event.resultIndex;
-        result.value = result.value + event.results[current][0].transcript;
-
-        if (speak.value.toLowerCase().replace(/[^a-zA-Z0-9 ]|^[\s]*|[\s+]*$/g, '') == result.value.toLowerCase().replace(/[^a-zA-Z0-9 ]|^[\s]*|[\s+]*$/g, '')) {
-            result.classList.add('success');
-            alert('Parabéns você acertou');
-        }
-    }
-
-    document.getElementById('play').addEventListener('click', () => {
-        recognition.start();
-        status.innerHTML = "Listening...";
-    });
-
-    document.getElementById('pause').addEventListener('click', () => {
-        recognition.stop();
-        status.innerHTML = "Stopped listening.";
-    });
-
-    document.getElementById('clear').addEventListener('click', () => {
-        result.value = "";
-    });
+// Clear the result when the clear button is clicked
+document.getElementById('clear').addEventListener('click', () => {
+    result.value = "";
+});
 
     //     const grammar =
     //   "#JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral | crimson | cyan | fuchsia | ghostwhite | gold | goldenrod | gray | green | indigo | ivory | khaki | lavender | lime | linen | magenta | maroon | moccasin | navy | olive | orange | orchid | peru | pink | plum | purple | red | salmon | sienna | silver | snow | tan | teal | thistle | tomato | turquoise | violet | white | yellow ;";
